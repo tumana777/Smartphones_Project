@@ -171,34 +171,22 @@
                                     {% for smartphone in smartphones %}
                                         <div class="col-md-6 col-lg-6 col-xl-4">
                                             <a href="{% url 'core:phone_detail' slug=smartphone.slug %}">
-                                                <div class="rounded position-relative fruite-item">
-                                                <div class="fruite-img">
-                                                    <img src="{{ smartphone.imageUrl }}" class="img-fluid rounded-top" style="max-height: 180px" alt="">
-                                                </div>
-                                                <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4>{{ smartphone }}</h4>
-                                                    <p>{{ smartphone.description }}</p>
-                                                    <div class="d-flex flex-column flex-lg-wrap">
-                                                        <p class="text-dark fs-5 fw-bold mb-0">${{ smartphone.price }}</p>
-                                                        <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                <div class="rounded position-relative border border-secondary fruite-item">
+                                                    <div class="fruite-img d-flex justify-content-center">
+                                                        <img src="{{ smartphone.imageUrl }}" class="img-fluid rounded-top" style="height: 180px" alt="">
+                                                    </div>
+                                                    <div class="p-4 border-top-0 rounded-bottom">
+                                                        <h4 style="height: 120px">{{ smartphone.name }}</h4>
+                                                        <div class="d-flex flex-column flex-lg-wrap">
+                                                            <p class="text-dark fs-5 fw-bold mb-0">${{ smartphone.price }}</p>
+                                                            <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
                                             </a>
                                         </div>
                                     {% endfor %}
-                                    <div class="col-12">
-                                        <div class="pagination d-flex justify-content-center mt-5">
-                                            <a href="#" class="rounded">&laquo;</a>
-                                            <a href="#" class="active rounded">1</a>
-                                            <a href="#" class="rounded">2</a>
-                                            <a href="#" class="rounded">3</a>
-                                            <a href="#" class="rounded">4</a>
-                                            <a href="#" class="rounded">5</a>
-                                            <a href="#" class="rounded">6</a>
-                                            <a href="#" class="rounded">&raquo;</a>
-                                        </div>
-                                    </div>
+                                    {% include 'partials/paginator.html' %}
                                 </div>
                             </div>
                         </div>
