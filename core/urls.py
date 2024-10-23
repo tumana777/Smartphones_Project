@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.urls import path
 
-from core.views import index, contact, smartphones_list, brand_products, phone_detail, testimonial
+from core.views import index, contact, smartphones_list, phone_detail, testimonial
 
 app_name = 'core'
 
@@ -24,7 +24,8 @@ urlpatterns = [
     path('', index, name='index'),
     path('contact/', contact, name='contact'),
     path('smartphones/', smartphones_list, name='smartphones_list'),
-    path('smartphones/brand=<slug:slug>/', brand_products, name='brand_products'),
+    path('smartphones/brand=<slug:brand_slug>/', smartphones_list, name='brand_products'),
+    path('smartphones/category=<slug:category_slug>/', smartphones_list, name='category_products'),
     path('testimonial/', testimonial, name='testimonial'),
     path('smartphone/<slug:slug>/', phone_detail, name='phone_detail'),
 ]
