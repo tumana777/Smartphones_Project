@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render
 from .models import Smartphone, Brand
 from django.core.paginator import Paginator
@@ -10,13 +11,22 @@ def smartphones_list(request):
 
     brands = get_brands_with_products_count()
 
-    smartphones = Smartphone.objects.select_related('brand').all()
+    search_query = request.GET.get('q')
+
+    if search_query:
+        smartphones = Smartphone.objects.select_related('brand').filter(name__icontains=search_query)
+    else:
+        smartphones = Smartphone.objects.select_related('brand').all()
+
+    total_smartphones = smartphones.count()
 
     paginator = Paginator(smartphones, 9)
     page_number = request.GET.get('page')
     smartphones = paginator.get_page(page_number)
 
     context = {
+        'total': total_smartphones,
+        'search_query': search_query,
         'brands': brands,
         'smartphones': smartphones,
     }
@@ -29,18 +39,27 @@ def brand_products(request, slug):
 
     brand = Brand.objects.get(slug=slug)
 
-    smartphones = Smartphone.objects.select_related('brand').filter(brand=brand)
+    search_query = request.GET.get('q')
+
+    if search_query:
+        smartphones = Smartphone.objects.select_related('brand').filter(Q(name__icontains=search_query) & Q(brand=brand))
+    else:
+        smartphones = Smartphone.objects.select_related('brand').filter(brand=brand)
+
+    total_smartphones = smartphones.count()
 
     paginator = Paginator(smartphones, 9)
     page_number = request.GET.get('page')
     smartphones = paginator.get_page(page_number)
 
     context = {
+        'total': total_smartphones,
+        'search_query': search_query,
         'brands': brands,
         'smartphones': smartphones
     }
 
-    return render(request, 'brand_products.html', context)
+    return render(request, 'shop.html', context)
 
 def phone_detail(request, slug):
 
