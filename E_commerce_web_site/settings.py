@@ -37,8 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'user.apps.UserConfig',
     'core.apps.CoreConfig',
+    'order.apps.OrderConfig',
+    
+    # Third-party apps
     "debug_toolbar",
 ]
 
@@ -68,6 +72,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.cart_total_quantity',
             ],
         },
     },

@@ -123,7 +123,7 @@
                                                         <h4 style="height: 120px">{{ smartphone.name }}</h4>
                                                         <div class="d-flex flex-column flex-lg-wrap">
                                                             <p class="text-dark fs-5 fw-bold mb-0">${{ smartphone.price }}</p>
-                                                            <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                            <a href="{% url 'order:add_to_cart' smartphone.pk %}" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
                                                         </div>
                                                     </div>
                                                 </div>

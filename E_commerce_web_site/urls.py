@@ -23,6 +23,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('store/', include('core.urls', namespace='core')),
+    path('order/', include('order.urls', namespace='order')),
 ] + debug_toolbar_urls()
 
 if settings.DEBUG:
