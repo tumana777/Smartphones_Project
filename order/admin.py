@@ -7,4 +7,7 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):
-    list_display = ('cart', 'product', 'quantity', 'total')
+    list_display = ('cart', 'product', 'get_product_price', 'quantity', 'total')
+
+    def get_product_price(self, obj):
+        return obj.product.price

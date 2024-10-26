@@ -9,8 +9,8 @@ class Cart(models.Model):
         return f"{self.user}'s cart"
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    product = models.ForeignKey('core.Smartphone', on_delete=models.CASCADE)
+    cart = models.ForeignKey('Cart', on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey('core.Smartphone', on_delete=models.CASCADE, related_name='products')
     quantity = models.IntegerField(default=1)
 
     def __str__(self):

@@ -7,11 +7,9 @@ def cart_total_quantity(request):
     if request.user.is_authenticated:
         try:
             cart = Cart.objects.get(user=request.user)
-            total_quantity = cart.cartitem_set.aggregate(total=Sum('quantity'))['total'] or 0
+            total_quantity = cart.items.aggregate(total=Sum('quantity'))['total'] or 0
         except Cart.DoesNotExist:
             total_quantity = 0
-    else:
-        total_quantity = request.session.get('total_quantity', 0)
 
     return {
         'total_quantity': total_quantity

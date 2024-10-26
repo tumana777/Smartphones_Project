@@ -9,7 +9,7 @@
         <div class="container-fluid page-header py-5">
             <h1 class="text-center text-white display-6">Shop</h1>
             <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'core:index' %}">Home</a></li>
                 <li class="breadcrumb-item"><a href="#">Pages</a></li>
                 <li class="breadcrumb-item active text-white">Shop</li>
             </ol>
@@ -27,6 +27,7 @@
                             <form class="col-xl-3" action=".">
                                 <div class="input-group w-100 mx-auto d-flex">
                                     <input type="search" class="form-control p-3" placeholder="search" aria-describedby="search-icon-1" name="q" value="{{ search_query|default_if_none:'' }}">
+                                    <input type="hidden" name="rangeInput" value="{{ request.GET.rangeInput|default_if_none:500 }}">
                                     <button type="submit" id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></button>
                                 </div>
                             </form>
@@ -40,15 +41,17 @@
                                 </div>
                             </div>
                             <div class="col-xl-3">
-                                <div class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
-                                    <label for="fruits">Default Sorting:</label>
-                                    <select id="fruits" name="fruitlist" class="border-0 form-select-sm bg-light me-3" form="fruitform">
-                                        <option value="volvo">Nothing</option>
-                                        <option value="saab">Popularity</option>
-                                        <option value="opel">Organic</option>
-                                        <option value="audi">Fantastic</option>
+                                <form action="." method="get" class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
+                                    <label for="fruits">Sorting:</label>
+                                    <select id="fruits" name="sort_by" class="border-0 form-select-sm bg-light me-3" onchange="this.form.submit()">
+                                        <option value="-created_at" {% if request.GET.sort_by == '-created_at' %}selected{% endif %}>Newest Added</option>
+                                        <option value="created_at" {% if request.GET.sort_by == 'created_at' %}selected{% endif %}>Oldest Added</option>
+                                        <option value="price" {% if request.GET.sort_by == 'price' %}selected{% endif %}>Price Increasing</option>
+                                        <option value="-price" {% if request.GET.sort_by == '-price' %}selected{% endif %}>Price Decreasing</option>
                                     </select>
-                                </div>
+                                    <input type="hidden" name="q" value="{{ request.GET.q|default_if_none:'' }}">
+                                    <input type="hidden" name="rangeInput" value="{{ request.GET.rangeInput|default_if_none:500 }}">
+                                </form>
                             </div>
                         </div>
                         <div class="row g-4">
@@ -89,7 +92,7 @@
                                             <div class="mb-3">
                                                 <h4 class="mb-2">Price</h4>
                                                 <input type="range" class="form-range w-100" id="rangeInput" name="rangeInput" min="0" max="5000" value="500" oninput="amount.value=rangeInput.value">
-                                                <output id="amount" name="amount" min-velue="0" max-value="500" for="rangeInput">0</output>
+                                                <output id="amount" name="amount" min-velue="0" max-value="5000" for="rangeInput">500</output>
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
@@ -101,9 +104,10 @@
                                                         <label for="{{ tag.name }}">{{ tag.name }}</label>
                                                     </div>
                                                 {% endfor %}
-                                                <button type="submit" class="btn btn-primary border border-secondary rounded-pill px-4 text-white mt-2 ">Filter</button>
                                             </div>
                                         </div>
+                                        <input type="hidden" name="q" value="{{ request.GET.q|default_if_none:'' }}">
+                                        <button type="submit" class="btn btn-primary border border-secondary rounded-pill px-4 text-white mt-2">Filter</button>
                                     </form>
                                 </div>
                             </div>
@@ -123,7 +127,12 @@
                                                         <h4 style="height: 120px">{{ smartphone.name }}</h4>
                                                         <div class="d-flex flex-column flex-lg-wrap">
                                                             <p class="text-dark fs-5 fw-bold mb-0">${{ smartphone.price }}</p>
-                                                            <a href="{% url 'order:add_to_cart' smartphone.pk %}" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                            <form action="{% url 'order:add_to_cart' %}" method="post" >
+                                                                {% csrf_token %}
+                                                                <input type="hidden" name="product" value="{{ smartphone.id }}">
+                                                                <input type="hidden" name="quantity" value="1">
+                                                                <button type="submit" class="btn {% if not smartphone.quantity %} disabled {% endif %} border border-secondary rounded-pill px-3 text-primary w-100"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</button>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -1,43 +1,51 @@
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
-from .models import Cart, CartItem
-from core.models import Smartphone
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from .forms import CartItemForm
+from .models import CartItem
 
-def add_to_cart(request, smartphone_pk):
-    smartphone = get_object_or_404(Smartphone, id=smartphone_pk)
+@login_required(login_url='admin:login')
+def cart_detail(request):
 
-    if smartphone.quantity <= 0:
-        messages.error(request, "Sorry, this product is out of stock.")
-        return redirect('core:smartphones_list')
+    cart_items = CartItem.objects.select_related('cart').select_related('product').filter(cart_id=request.user.cart.id)
 
-    if request.user.is_authenticated:
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=smartphone)
+    context = {
+        'cart_items': cart_items
+    }
 
-        if not item_created:
-            if cart_item.quantity + 1 > smartphone.quantity:
-                messages.error(request, "Sorry, there is not enough stock to add more of this item.")
-            else:
+    return render(request, 'cart.html', context)
+
+@login_required(login_url='admin:login')
+def add_to_cart(request):
+    if request.method != 'POST':
+        return HttpResponse(status=405)
+
+    form = CartItemForm(request.POST, cart=request.user.cart)
+    if form.is_valid():
+        item = form.save(commit=False)
+        item.cart_id = request.user.cart.id
+        item.save()
+    return redirect(request.META.get('HTTP_REFERER', ''))
+
+@login_required(login_url='admin:login')
+def update_cart(request):
+    if request.method == 'POST':
+        cart_item_id = request.POST.get('cart_item_id')
+        cart_item = get_object_or_404(CartItem, id=cart_item_id, cart=request.user.cart)
+
+        if 'increase' in request.POST:
+            if cart_item.product.quantity > cart_item.quantity:
                 cart_item.quantity += 1
                 cart_item.save()
-        else:
-            cart_item.quantity = 1
-            cart_item.save()
-    else:
-        cart = request.session.get('cart', {})
 
-        if str(smartphone_pk) in cart:
-            if cart[str(smartphone_pk)]['quantity'] + 1 > smartphone.quantity:
-                messages.error(request, "Sorry, there is not enough stock to add more of this item.")
+        if 'decrease' in request.POST:
+            if cart_item.quantity > 1:
+                cart_item.quantity -= 1
+                cart_item.save()
             else:
-                cart[str(smartphone_pk)]['quantity'] += 1
-        else:
-            cart[str(smartphone_pk)] = {
-                'name': smartphone.name,
-                'price': smartphone.price,
-                'quantity': 1
-            }
+                cart_item.delete()
 
-        request.session['cart'] = cart
+        if 'remove' in request.POST:
+            cart_item.delete()
 
-    return redirect('core:smartphones_list')
+    return redirect(request.META.get('HTTP_REFERER', ''))
