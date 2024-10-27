@@ -1,35 +1,34 @@
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
 from .forms import CartItemForm
 from .models import CartItem
 
-@login_required(login_url='admin:login')
-def cart_detail(request):
+class CartDetailView(LoginRequiredMixin, View):
+    login_url = 'admin:login'
 
-    cart_items = CartItem.objects.select_related('cart').select_related('product').filter(cart_id=request.user.cart.id)
+    def get(self, request):
+        cart_items = CartItem.objects.select_related('cart').select_related('product').filter(cart_id=request.user.cart.id)
+        context = {
+            'cart_items': cart_items
+        }
+        return render(request, 'cart.html', context)
 
-    context = {
-        'cart_items': cart_items
-    }
+class AddToCartView(LoginRequiredMixin, View):
+    login_url = 'admin:login'
 
-    return render(request, 'cart.html', context)
+    def post(self, request):
+        form = CartItemForm(request.POST, cart=request.user.cart)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.cart_id = request.user.cart.id
+            item.save()
+        return redirect(request.META.get('HTTP_REFERER', ''))
 
-@login_required(login_url='admin:login')
-def add_to_cart(request):
-    if request.method != 'POST':
-        return HttpResponse(status=405)
+class UpdateCartView(LoginRequiredMixin, View):
+    login_url = 'admin:login'
 
-    form = CartItemForm(request.POST, cart=request.user.cart)
-    if form.is_valid():
-        item = form.save(commit=False)
-        item.cart_id = request.user.cart.id
-        item.save()
-    return redirect(request.META.get('HTTP_REFERER', ''))
-
-@login_required(login_url='admin:login')
-def update_cart(request):
-    if request.method == 'POST':
+    def post(self, request):
         cart_item_id = request.POST.get('cart_item_id')
         cart_item = get_object_or_404(CartItem, id=cart_item_id, cart=request.user.cart)
 
@@ -48,4 +47,4 @@ def update_cart(request):
         if 'remove' in request.POST:
             cart_item.delete()
 
-    return redirect(request.META.get('HTTP_REFERER', ''))
+        return redirect(request.META.get('HTTP_REFERER', ''))
