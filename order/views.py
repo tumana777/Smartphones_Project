@@ -5,7 +5,7 @@ from .forms import CartItemForm
 from .models import CartItem
 
 class CartDetailView(LoginRequiredMixin, View):
-    login_url = 'admin:login'
+    login_url = 'user:login'
 
     def get(self, request):
         cart_items = CartItem.objects.select_related('cart').select_related('product').filter(cart_id=request.user.cart.id)
@@ -15,7 +15,7 @@ class CartDetailView(LoginRequiredMixin, View):
         return render(request, 'cart.html', context)
 
 class AddToCartView(LoginRequiredMixin, View):
-    login_url = 'admin:login'
+    login_url = 'user:login'
 
     def post(self, request):
         form = CartItemForm(request.POST, cart=request.user.cart)
@@ -26,7 +26,7 @@ class AddToCartView(LoginRequiredMixin, View):
         return redirect(request.META.get('HTTP_REFERER', ''))
 
 class UpdateCartView(LoginRequiredMixin, View):
-    login_url = 'admin:login'
+    login_url = 'user:login'
 
     def post(self, request):
         cart_item_id = request.POST.get('cart_item_id')

@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Application definition
 
@@ -44,6 +45,8 @@ INSTALLED_APPS = [
     
     # Third-party apps
     "debug_toolbar",
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 AUTH_USER_MODEL = 'user.User'
@@ -57,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    'user.middleware.LastActivityMiddleware'
 ]
 
 ROOT_URLCONF = 'E_commerce_web_site.urls'

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %} Register Page {% endblock %}
+
+{% block content %}
+    <div class="container-fluid py-5" style="margin-top: 100px">
+        <div class="container py-5">
+            {% if user.is_authenticated %}
+                <h2 class="mt-5">You have been already logged in as {{ user }}!</h2>
+                <div class="border-top pt-3 mb-4">
+                    <small class="text-muted">
+                        <a href="{% url 'user:logout' %}" class="ml-2">Sign out first</a>
+                    </small>
+                </div>
+            {% else %}
+                <form method="post" style="width: 500px;">
+                    {% csrf_token %}
+                    <h2 class="border-bottom mb-4 pt-3 pb-2">Join Today</h2>
+                    {{ form|crispy }}
+                    <div class="form-group mb-4">
+                        <button type="submit" class="btn btn-primary">Sign Up</button>
+                    </div>
+                </form>
+                <div class="border-top pt-3 mb-4">
+                    <small class="text-muted">Already Have An Account? <a href="{% url 'user:login' %}" class="ml-2">Sign In</a></small>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{#{% block body %}#}
+{#    {% if user.is_authenticated %}#}
+{#        <h2 class="mt-5">You have been already logged in as {{ user }}!</h2>#}
+{#        <div class="border-top pt-3 mb-4">#}
+{#            <small class="text-muted">#}
+{#                <a href="#" class="ml-2">Sign out first</a>#}
+{#            </small>#}
+{#        </div>#}
+{#    {% else %}#}
+{#        <form method="post" style="width: 500px;">#}
+{#            {% csrf_token %}#}
+{#            <h2 class="border-bottom mb-4 pt-3 pb-2">Join Today</h2>#}
+{#            {{ form|crispy }}#}
+{#            <div class="form-group mb-4">#}
+{#                <button type="submit" class="btn btn-primary">Sign Up</button>#}
+{#            </div>#}
+{#        </form>#}
+{#        <div class="border-top pt-3 mb-4">#}
+{#            <small class="text-muted">Already Have An Account? <a href="{% url 'login' %}" class="ml-2">Sign In</a></small>#}
+{#        </div>#}
+{#    {% endif %}#}
+{#{% endblock %}#}
