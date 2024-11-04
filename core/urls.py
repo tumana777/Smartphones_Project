@@ -17,7 +17,7 @@ Including another URLconf
 from django.urls import path
 from django.views.generic import TemplateView
 
-from core.views import SmartphonesListView, PhoneDetailView, smartphones_list
+from core.views import SmartphonesListView, PhoneDetailView, check500
 
 app_name = 'core'
 
@@ -29,4 +29,5 @@ urlpatterns = [
     path('smartphones/brand=<slug:brand_slug>/', SmartphonesListView.as_view(), name='brand_products'),
     path('smartphones/category=<slug:category_slug>/', SmartphonesListView.as_view(), name='category_products'),
     path('smartphone/<slug:slug>/', PhoneDetailView.as_view(), name='phone_detail'),
+    path('check500/', check500, name='check500'),
 ]
