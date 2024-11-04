@@ -1,11 +1,9 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import DetailView, ListView
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 
 from .models import Smartphone, Brand, Category, ProductTag
 
-@method_decorator(cache_page(60 * 10), name='dispatch')
 class SmartphonesListView(ListView):
     model = Smartphone
     template_name = 'shop.html'
@@ -13,7 +11,7 @@ class SmartphonesListView(ListView):
     paginate_by = 9
 
     def get_queryset(self):
-        smartphones = Smartphone.objects.all()
+
         category_slug = self.kwargs.get('category_slug')
         brand_slug = self.kwargs.get('brand_slug')
         search_query = self.request.GET.get('q')
@@ -21,26 +19,34 @@ class SmartphonesListView(ListView):
         tag_query = self.request.GET.get('tag-name')
         sort_by = self.request.GET.get('sort_by', '-created_at')
 
-        if category_slug:
-            category = get_object_or_404(Category, slug=category_slug)
-            all_categories = category.get_descendants(include_self=True)
-            smartphones = smartphones.filter(category__in=all_categories)
+        cache_key = f"smartphones_queryset_{category_slug}_{brand_slug}_{search_query}_{price_query}_{tag_query}_{sort_by}"
+        smartphones = cache.get(cache_key)
 
-        if brand_slug:
-            brand = get_object_or_404(Brand, slug=brand_slug)
-            smartphones = smartphones.filter(brand=brand)
+        if not smartphones:
+            smartphones = Smartphone.objects.all()
 
-        if search_query:
-            smartphones = smartphones.filter(name__icontains=search_query)
+            if category_slug:
+                category = get_object_or_404(Category, slug=category_slug)
+                all_categories = category.get_descendants(include_self=True)
+                smartphones = smartphones.filter(category__in=all_categories)
 
-        if price_query:
-            smartphones = smartphones.filter(price__lte=price_query)
+            if brand_slug:
+                brand = get_object_or_404(Brand, slug=brand_slug)
+                smartphones = smartphones.filter(brand=brand)
 
-        if tag_query:
-            smartphones = smartphones.filter(tags__name=tag_query)
+            if search_query:
+                smartphones = smartphones.filter(name__icontains=search_query)
 
-        smartphones = smartphones.order_by(sort_by)
-        smartphones = smartphones.prefetch_related('category').select_related('brand').prefetch_related('tags')
+            if price_query:
+                smartphones = smartphones.filter(price__lte=price_query)
+
+            if tag_query:
+                smartphones = smartphones.filter(tags__name=tag_query)
+
+            smartphones = smartphones.order_by(sort_by)
+            smartphones = smartphones.prefetch_related('category').select_related('brand').prefetch_related('tags')
+
+            cache.set(cache_key, smartphones, timeout=60 * 10)
 
         return smartphones
 
