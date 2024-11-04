@@ -1,3 +1,5 @@
+{% load cache %}
+        {% cache 600 navbar %}
         <!-- Navbar start -->
         <div class="container-fluid fixed-top">
             <div class="container topbar bg-primary d-none d-lg-block">
@@ -33,6 +35,7 @@
                             </div>
                             <a href="{% url 'core:contact' %}" class="nav-item nav-link">Contact</a>
                         </div>
+        {% endcache %}
                         <div class="d-flex m-3 me-0">
                             <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search text-primary"></i></button>
                             <a href="{% url 'order:cart_detail' %}" class="position-relative me-4 my-auto">

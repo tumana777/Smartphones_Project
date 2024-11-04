@@ -1,8 +1,11 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import DetailView, ListView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 from .models import Smartphone, Brand, Category, ProductTag
 
+@method_decorator(cache_page(60 * 10), name='dispatch')
 class SmartphonesListView(ListView):
     model = Smartphone
     template_name = 'shop.html'
@@ -13,38 +16,30 @@ class SmartphonesListView(ListView):
         smartphones = Smartphone.objects.all()
         category_slug = self.kwargs.get('category_slug')
         brand_slug = self.kwargs.get('brand_slug')
+        search_query = self.request.GET.get('q')
+        price_query = self.request.GET.get('rangeInput')
+        tag_query = self.request.GET.get('tag-name')
+        sort_by = self.request.GET.get('sort_by', '-created_at')
 
-        # Filtering by category
         if category_slug:
             category = get_object_or_404(Category, slug=category_slug)
             all_categories = category.get_descendants(include_self=True)
             smartphones = smartphones.filter(category__in=all_categories)
 
-        # Filtering by brand
         if brand_slug:
             brand = get_object_or_404(Brand, slug=brand_slug)
             smartphones = smartphones.filter(brand=brand)
 
-        # Search filter
-        search_query = self.request.GET.get('q')
         if search_query:
             smartphones = smartphones.filter(name__icontains=search_query)
 
-        # Price filter
-        price_query = self.request.GET.get('rangeInput')
         if price_query:
             smartphones = smartphones.filter(price__lte=price_query)
 
-        # Tag filter
-        tag_query = self.request.GET.get('tag-name')
         if tag_query:
             smartphones = smartphones.filter(tags__name=tag_query)
 
-        # Sorting
-        sort_by = self.request.GET.get('sort_by', '-created_at')
         smartphones = smartphones.order_by(sort_by)
-
-        # Optimize queries with select_related and prefetch_related
         smartphones = smartphones.prefetch_related('category').select_related('brand').prefetch_related('tags')
 
         return smartphones
