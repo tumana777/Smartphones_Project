@@ -19,6 +19,9 @@
         <!-- Contact Start -->
         <div class="container-fluid contact py-5">
             <div class="container py-5">
+                {% if sender_name %}
+                    <h2 style="text-align: center; margin-bottom: 50px">Hello {{ sender_name }}, your message has been successfully sent!</h2>
+                {% endif %}
                 <div class="p-5 bg-light rounded">
                     <div class="row g-4">
                         <div class="col-12">
@@ -35,10 +38,11 @@
                             </div>
                         </div>
                         <div class="col-lg-7">
-                            <form action="" class="">
-                                <input type="text" class="w-100 form-control border-0 py-3 mb-4" placeholder="Your Name">
-                                <input type="email" class="w-100 form-control border-0 py-3 mb-4" placeholder="Enter Your Email">
-                                <textarea class="w-100 form-control border-0 mb-4" rows="5" cols="10" placeholder="Your Message"></textarea>
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="text" name="sender_name" class="w-100 form-control border-0 py-3 mb-4" placeholder="Your Name" required>
+                                <input type="email" name="sender_email" class="w-100 form-control border-0 py-3 mb-4" placeholder="Enter Your Email" required>
+                                <textarea name="message" class="w-100 form-control border-0 mb-4" rows="5" cols="10" placeholder="Your Message" required></textarea>
                                 <button class="w-100 btn form-control border-secondary py-3 bg-white text-primary " type="submit">Submit</button>
                             </form>
                         </div>

@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import DetailView, ListView
 from django.core.cache import cache
+from django.core.mail import send_mail
 
 from .models import Smartphone, Brand, Category, ProductTag
 
@@ -96,6 +97,18 @@ def error_404_view(request, exception):
 
 def error_500_view(request):
     return render(request, '500.html', status=500)
+
+def contact(request):
+    if request.method == "POST":
+        sender_name = request.POST['sender_name']
+        sender_email = request.POST['sender_email']
+        message = request.POST['message']
+
+        send_mail(sender_name, message, sender_email, ["tumana991@gmail.com"])
+
+        return render(request, 'contact.html', {"sender_name": sender_name})
+
+    return render(request, 'contact.html')
 
 # This view is to check error 500 manually
 def check500():

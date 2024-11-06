@@ -17,13 +17,13 @@ Including another URLconf
 from django.urls import path
 from django.views.generic import TemplateView
 
-from core.views import SmartphonesListView, PhoneDetailView, check500
+from core.views import SmartphonesListView, PhoneDetailView, contact, check500
 
 app_name = 'core'
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
-    path('contact/', TemplateView.as_view(template_name='contact.html'), name='contact'),
+    path('contact/', contact, name='contact'),
     path('testimonial/', TemplateView.as_view(template_name='testimonial.html'), name='testimonial'),
     path('smartphones/', SmartphonesListView.as_view(), name='smartphones_list'),
     path('smartphones/brand=<slug:brand_slug>/', SmartphonesListView.as_view(), name='brand_products'),
