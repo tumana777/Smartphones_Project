@@ -1,12 +1,13 @@
 from django.db import models
 from autoslug import AutoSlugField
 from mptt.models import MPTTModel, TreeForeignKey
+from django.utils.translation import gettext_lazy as _
 
 
 class Category(MPTTModel):
-    name = models.CharField(max_length=20, unique=True)
-    parent = TreeForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='children')
-    slug = AutoSlugField(populate_from='name')
+    name = models.CharField(max_length=20, unique=True, verbose_name=_('Name'))
+    parent = TreeForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='children', verbose_name=_('Parent'))
+    slug = AutoSlugField(populate_from='name', verbose_name=_('Slug'))
 
     class Meta:
         db_table = 'category'
@@ -22,36 +23,36 @@ class Category(MPTTModel):
             return self.name
 
 class Brand(models.Model):
-    name = models.CharField(max_length=20, unique=True)
-    slug = AutoSlugField(populate_from='name', unique=True)
+    name = models.CharField(max_length=20, unique=True, verbose_name=_("name"))
+    slug = AutoSlugField(populate_from='name', unique=True, verbose_name=_("slug"))
 
     def __str__(self):
         return self.name
 
 class ProductTag(models.Model):
-    name = models.CharField(max_length=10, unique=True)
+    name = models.CharField(max_length=20, unique=True, verbose_name=_("name"))
 
     class Meta:
-        db_table = 'Product Tag'
-        verbose_name_plural = 'Product Tags'
+        db_table = _('product_tag')
+        verbose_name_plural = _("product_tags")
 
     def __str__(self):
         return self.name
 
 class Smartphone(models.Model):
-    category = models.ManyToManyField('Category', related_name='smartphones')
-    brand = models.ForeignKey('Brand', on_delete=models.CASCADE, related_name='smartphones')
-    tags = models.ManyToManyField('ProductTag', related_name='smartphones')
-    name = models.CharField(max_length=50)
-    price = models.IntegerField()
-    quantity = models.IntegerField()
-    is_active = models.BooleanField(default=True)
-    description = models.TextField(null=True, blank=True)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    image = models.ImageField(upload_to='images/', null=True, blank=True)
-    imageUrl = models.URLField(null=True, blank=True)
-    slug = AutoSlugField(populate_from='name', unique=True)
+    category = models.ManyToManyField('Category', related_name='smartphones', verbose_name=_("category"))
+    brand = models.ForeignKey('Brand', on_delete=models.CASCADE, related_name='smartphones', verbose_name=_("brand"))
+    tags = models.ManyToManyField('ProductTag', related_name='smartphones', verbose_name=_("tags"))
+    name = models.CharField(max_length=50, verbose_name=_("name"))
+    price = models.IntegerField(verbose_name=_("price"))
+    quantity = models.IntegerField(verbose_name=_("quantity"))
+    is_active = models.BooleanField(default=True, verbose_name=_("is active"))
+    description = models.TextField(null=True, blank=True, verbose_name=_("description"))
+    created_at = models.DateField(auto_now_add=True, verbose_name=_("created at"))
+    updated_at = models.DateField(auto_now=True, verbose_name=_("updated at"))
+    image = models.ImageField(upload_to='images/', null=True, blank=True, verbose_name=_("image"))
+    imageUrl = models.URLField(null=True, blank=True, verbose_name=_("image url"))
+    slug = AutoSlugField(populate_from='name', unique=True, verbose_name=_("slug"))
 
     def __str__(self):
         return self.name

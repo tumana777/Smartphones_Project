@@ -32,6 +32,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # Application definition
 
 INSTALLED_APPS = [
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'crispy_forms',
     'crispy_bootstrap5',
+    'rosetta',
 ]
 
 AUTH_USER_MODEL = 'user.User'
@@ -55,6 +57,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -123,6 +126,18 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Tbilisi'
 
 USE_I18N = True
+USE_L10N = True
+
+LANGUAGES = [
+    ('en', 'English'),
+    ('ka', 'ქართული'),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale'
+]
+
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
 
 USE_TZ = True
 

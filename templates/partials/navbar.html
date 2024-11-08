@@ -1,5 +1,6 @@
+{% load i18n %}
 {% load cache %}
-        {% cache 600 navbar %}
+{#        {% cache 600 navbar %}#}
         <!-- Navbar start -->
         <div class="container-fluid fixed-top">
             <div class="container topbar bg-primary d-none d-lg-block">
@@ -13,29 +14,43 @@
                         <a href="#" class="text-white"><small class="text-white mx-2">Terms of Use</small>/</a>
                         <a href="#" class="text-white"><small class="text-white ms-2">Sales and Refunds</small></a>
                     </div>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ redirect_to }}">
+                        <select class="text-white" style="background-color: transparent; border: none" name="language" onchange="this.form.submit()">
+                            {% get_current_language as LANGUAGE_CODE %}
+                            {% get_available_languages as LANGUAGES %}
+                            {% get_language_info_list for LANGUAGES as languages %}
+                            {% for language in languages %}
+                                <option style="color: black" value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                                    {{ language.name_local }} ({{ language.code }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
                 </div>
             </div>
             <div class="container px-0">
                 <nav class="navbar navbar-light bg-white navbar-expand-xl">
-                    <a href="{% url 'core:index' %}" class="navbar-brand"><h1 class="text-primary display-6">SmartPhones</h1></a>
+                    <a href="{% url 'core:index' %}" class="navbar-brand"><h1 class="text-primary display-6">{% trans 'SmartPhones' %}</h1></a>
                     <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                         <span class="fa fa-bars text-primary"></span>
                     </button>
                     <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
                         <div class="navbar-nav mx-auto">
-                            <a href="{% url 'core:index' %}" class="nav-item nav-link active">Home</a>
-                            <a href="{% url 'core:smartphones_list' %}" class="nav-item nav-link">Products</a>
+                            <a href="{% url 'core:index' %}" class="nav-item nav-link active">{% trans 'Home' %}</a>
+                            <a href="{% url 'core:smartphones_list' %}" class="nav-item nav-link">{% trans 'Products' %}</a>
                             <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">{% trans 'Pages' %}</a>
                                 <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                                    <a href="{% url 'order:cart_detail' %}" class="dropdown-item">Cart</a>
-                                    <a href="#" class="dropdown-item">Checkout</a>
-                                    <a href="{% url 'core:testimonial' %}" class="dropdown-item">Testimonial</a>
+                                    <a href="{% url 'order:cart_detail' %}" class="dropdown-item">{% trans 'Cart' %}</a>
+                                    <a href="#" class="dropdown-item">{% trans 'Checkout' %}</a>
+                                    <a href="{% url 'core:testimonial' %}" class="dropdown-item">{% trans 'Testimonial' %}</a>
                                 </div>
                             </div>
-                            <a href="{% url 'core:contact' %}" class="nav-item nav-link">Contact</a>
+                            <a href="{% url 'core:contact' %}" class="nav-item nav-link">{% trans 'Contact' %}</a>
                         </div>
-        {% endcache %}
+{#        {% endcache %}#}
                         <div class="d-flex m-3 me-0">
                             <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search text-primary"></i></button>
                             <a href="{% url 'order:cart_detail' %}" class="position-relative me-4 my-auto">

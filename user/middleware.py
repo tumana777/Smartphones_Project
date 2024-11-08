@@ -7,5 +7,5 @@ class LastActivityMiddleware(MiddlewareMixin):
         if request.user.is_authenticated:
             request.user.last_activity = datetime.now()
             request.user.save()
-            request.session.set_expiry(60)
+            request.session.set_expiry(600)
         return None
